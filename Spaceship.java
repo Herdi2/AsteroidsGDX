@@ -9,7 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Spaceship extends Actor {
 
-    private final TextureRegion texture;
+    private final TextureRegion textureRegion;
+    private final Texture texture;
     private float spaceshipX;
     private float spaceshipY;
 
@@ -22,10 +23,14 @@ public class Spaceship extends Actor {
 
         // Load in the spaceship textures
         FileHandle spaceshipFile = new FileHandle("assets/spaceship.png");
-        texture = new TextureRegion();
-        texture.setRegion(new Texture(spaceshipFile));
+        textureRegion = new TextureRegion();
+        texture = new Texture(spaceshipFile);
+        textureRegion.setRegion(texture);
         this.setPosition(spaceshipX, spaceshipY);
         setSize(50, 50);
+
+        // Sets origin to be the middle of the spaceship
+        setOrigin(getOriginX() + 25, getOriginY() + 25);
     }
 
     /**
@@ -61,7 +66,7 @@ public class Spaceship extends Actor {
 
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a);
-        batch.draw(texture,
+        batch.draw(textureRegion,
                 getX(), getY(), getOriginX(), getOriginY(),
                 getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
     }
