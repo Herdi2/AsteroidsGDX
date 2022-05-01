@@ -27,10 +27,10 @@ public class Spaceship extends Actor {
         texture = new Texture(spaceshipFile);
         textureRegion.setRegion(texture);
         this.setPosition(spaceshipX, spaceshipY);
-        setSize(50, 50);
+        setSize(texture.getWidth(), texture.getHeight());
 
         // Sets origin to be the middle of the spaceship
-        setOrigin(getOriginX() + 25, getOriginY() + 25);
+        setOrigin(getOriginX() + (float) texture.getWidth()/2, getOriginY() + (float) texture.getHeight()/2);
     }
 
     /**
