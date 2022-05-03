@@ -64,8 +64,6 @@ public class Asteroids extends Game implements InputProcessor {
 
             Particle laser = new Particle(spaceship);
             gameStage.addActor(laser);
-
-            System.out.println("SHOOT");
         }
         return false;
     }
@@ -77,23 +75,13 @@ public class Asteroids extends Game implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        spaceship.setMouse(screenX, screenY);
+        return true;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        /**
-         * To understand the geometry of the game screen, the following source was used:
-         * https://gamedev.stackexchange.com/questions/81810/accurate-sprite-rotation-with-mouse-movement
-         */
-        // Calculate angle of rotation
-        float deltaX = (float) screenX - spaceship.getX();
-        float deltaY = (float) (WINDOW_HEIGHT - screenY) - spaceship.getY();
-        float theta = MathUtils.radiansToDegrees * MathUtils.atan2(deltaY, deltaX);
-
-        // Apply the rotation
-        if(theta < 0) theta += 360;
-        spaceship.setRotation(theta - 90); // Offset for the spaceship png
+        spaceship.setMouse(screenX, screenY);
         return true;
     }
 
