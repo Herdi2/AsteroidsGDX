@@ -64,8 +64,6 @@ public class Asteroids extends Game implements InputProcessor {
 
             Particle laser = new Particle(spaceship);
             gameStage.addActor(laser);
-
-            System.out.println("SHOOT");
         }
         return false;
     }
