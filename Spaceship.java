@@ -9,6 +9,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+/**
+ * The spaceship class, creating the player controlled main game actor.
+ */
 public class Spaceship extends Actor {
 
     private final TextureRegion textureRegion;
@@ -25,6 +28,7 @@ public class Spaceship extends Actor {
     private int mouseY;
     private int originPosX;
     private int originPosY;
+    private int distanceToMouseLimit;
 
     public Spaceship() {
         super();
@@ -36,6 +40,7 @@ public class Spaceship extends Actor {
         // Set spaceship velocity
         speed = 5.0f;
         velocityVec = new Vector2(1, 1);
+        distanceToMouseLimit = 10;
 
         // Load in the spaceship textures
         FileHandle spaceshipFile = new FileHandle("assets/spaceship.png");
@@ -60,8 +65,16 @@ public class Spaceship extends Actor {
         if(Gdx.input.isKeyPressed(Input.Keys.W)) {
             velocityVec.setAngle(getRotation() + 90);
             velocityVec = velocityVec.nor().scl(speed);
-            moveBy(velocityVec.x, velocityVec.y);
 
+            // Avoids visual glitches when the cursor is in the middle of the spaceship
+            originPosX = (int) (getX() + getOriginX());
+            originPosY = (int) (getY() + getOriginY());
+            if((originPosX <= mouseX + distanceToMouseLimit && originPosX >= mouseX - distanceToMouseLimit) &&
+                    (originPosY <= mouseY + distanceToMouseLimit && originPosY >= mouseY - distanceToMouseLimit)) {
+                moveBy(0, 0);
+            } else {
+                moveBy(velocityVec.x, velocityVec.y);
+            }
         }
 
 
