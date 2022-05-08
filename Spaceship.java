@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import java.lang.Math.*;
 
 /**
  * The spaceship class, creating the player controlled main game actor.
@@ -21,15 +20,17 @@ public class Spaceship extends Actor {
     private float spaceshipX;
     private float spaceshipY;
     private Vector2 velocityVec;
-    private float speed;
+    private Vector2 accelVec;
+    private float maxSpeed;
+    private float acceleration;
+    private float deceleration;
+
+
 
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
     private int mouseX;
     private int mouseY;
-    private int originPosX;
-    private int originPosY;
-    private int distanceToMouseLimit;
 
     public Spaceship() {
         super();
@@ -39,9 +40,11 @@ public class Spaceship extends Actor {
         spaceshipY = 300;
 
         // Set spaceship velocity
-        speed = 5.0f;
-        velocityVec = new Vector2(1, 1);
-        distanceToMouseLimit = 10;
+        acceleration = 150;
+        deceleration = 50;
+        maxSpeed = 200;
+        velocityVec = new Vector2(0, 0);
+        accelVec = new Vector2(0, 0);
 
         // Load in the spaceship textures
         FileHandle spaceshipFile = new FileHandle("assets/spaceship.png");
@@ -62,27 +65,49 @@ public class Spaceship extends Actor {
      */
     public void act(float dt) {
 
-        // Check user input
         if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-            velocityVec.setAngle(getRotation() + 90);
-            velocityVec = velocityVec.nor().scl(speed);
-
-            // Avoids visual glitches when the cursor is in the middle of the spaceship
-            originPosX = (int) (getX() + getOriginX());
-            originPosY = (int) (getY() + getOriginY());
-            if((originPosX <= mouseX + distanceToMouseLimit && originPosX >= mouseX - distanceToMouseLimit) &&
-                    (originPosY <= mouseY + distanceToMouseLimit && originPosY >= mouseY - distanceToMouseLimit)) {
-                moveBy(0, 0);
-            } else {
-                moveBy(velocityVec.x, velocityVec.y);
-            }
+            accelerate(dt);
         }
 
-        // Bound spaceship to world
         boundSpaceshipToWorld();
-
-        // Spaceship rotation
         rotate();
+        applyPhysics(dt);
+    }
+
+    /**
+     * Accelerate the spaceship in the direction it is pointing at.
+     *
+     * @param dt time between frames
+     */
+    private void accelerate(float dt) {
+        accelVec.x = acceleration;
+        accelVec.setAngle(getRotation() + 90);
+        velocityVec.add(accelVec.scl(dt));
+    }
+
+    /**
+     * Applies physics to the spaceship, to make it decelerate and
+     * hold its speed between 0 and maxSpeed.
+     *
+     * This method of accelerating an object was taken from
+     * Lee Stemkoski's "Java Game Development with LibGDX"
+     *
+     * @param dt time between frames
+     */
+    private void applyPhysics(float dt) {
+        float speed = velocityVec.len();
+
+        if(accelVec.len() == 0) {
+            speed -= deceleration * dt;
+        }
+
+        speed = MathUtils.clamp(speed, 0, maxSpeed);
+
+        velocityVec.setLength(speed);
+
+        moveBy(velocityVec.x * dt, velocityVec.y * dt);
+
+        accelVec.setZero();
     }
 
     /**
@@ -102,7 +127,7 @@ public class Spaceship extends Actor {
         }
     }
 
-    /**s
+    /**
      * Set the mouse position.
      *
      * @param screenX x coordinate of mouse
