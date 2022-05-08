@@ -6,18 +6,25 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Spaceship extends Actor {
 
     private final TextureRegion textureRegion;
     private final Texture texture;
+
     private float spaceshipX;
     private float spaceshipY;
+    private Vector2 velocityVec;
+    private float speed;
+
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
-    private int screenX;
-    private int screenY;
+    private int mouseX;
+    private int mouseY;
+    private int originPosX;
+    private int originPosY;
 
     public Spaceship() {
         super();
@@ -25,6 +32,10 @@ public class Spaceship extends Actor {
         // Set the spaceship coordinates
         spaceshipX = 400;
         spaceshipY = 300;
+
+        // Set spaceship velocity
+        speed = 5.0f;
+        velocityVec = new Vector2(1, 1);
 
         // Load in the spaceship textures
         FileHandle spaceshipFile = new FileHandle("assets/spaceship.png");
@@ -47,17 +58,12 @@ public class Spaceship extends Actor {
 
         // Check user input
         if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-            moveBy(0, 5);
+            velocityVec.setAngle(getRotation() + 90);
+            velocityVec = velocityVec.nor().scl(speed);
+            moveBy(velocityVec.x, velocityVec.y);
+
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-            moveBy(0, -5);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-            moveBy(5, 0);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-            moveBy(-5, 0);
-        }
+
 
         // Spaceship rotation
         rotate();
@@ -70,8 +76,8 @@ public class Spaceship extends Actor {
      * @param screenY y coordinate of mouse
      */
     public void setMouse(int screenX, int screenY) {
-        this.screenX = screenX;
-        this.screenY = screenY;
+        this.mouseX = screenX;
+        this.mouseY = WINDOW_HEIGHT - screenY;
     }
 
     /**
@@ -83,8 +89,8 @@ public class Spaceship extends Actor {
          * https://gamedev.stackexchange.com/questions/81810/accurate-sprite-rotation-with-mouse-movement
          */
         // Calculate angle of rotation
-        float deltaX = (float) screenX - getX() - getWidth()/2;
-        float deltaY = (float) (WINDOW_HEIGHT - screenY) - getY() - getHeight()/2;
+        float deltaX = (float) mouseX - getX() - getWidth()/2;
+        float deltaY = (float) mouseY - getY() - getHeight()/2;
         float theta = MathUtils.radiansToDegrees * MathUtils.atan2(deltaY, deltaX);
 
         // Apply the rotation
