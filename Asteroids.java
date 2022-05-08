@@ -45,6 +45,10 @@ public class Asteroids extends Game implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.SPACE) {
+            Particle laser = new Particle(spaceship);
+            gameStage.addActor(laser);
+        }
         return false;
     }
 
@@ -60,11 +64,6 @@ public class Asteroids extends Game implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(button == Input.Buttons.LEFT) {
-
-            Particle laser = new Particle(spaceship);
-            gameStage.addActor(laser);
-        }
         return false;
     }
 
