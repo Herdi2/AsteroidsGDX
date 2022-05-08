@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import java.lang.Math.*;
 
 /**
  * The spaceship class, creating the player controlled main game actor.
@@ -77,12 +78,31 @@ public class Spaceship extends Actor {
             }
         }
 
+        // Bound spaceship to world
+        boundSpaceshipToWorld();
 
         // Spaceship rotation
         rotate();
     }
 
     /**
+     * Bounds the spaceship to the world by letting it wrap around
+     * when going offscreen.
+     */
+    private void boundSpaceshipToWorld() {
+
+        if(getX() + getHeight()/2 < 0) {
+            setX(WINDOW_WIDTH);
+        } else if(getX() > WINDOW_WIDTH) {
+            setX(0);
+        } else if(getY() > WINDOW_HEIGHT) {
+            setY(0);
+        } else if(getY() + getHeight() < 0) {
+            setY(WINDOW_HEIGHT);
+        }
+    }
+
+    /**s
      * Set the mouse position.
      *
      * @param screenX x coordinate of mouse
