@@ -1,15 +1,19 @@
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 
+/**
+ * The main class for handling the different game screens
+ */
 public class Asteroids extends Game {
 
-    private Game game;
+    private static Game game;
 
     @Override
     public void create() {
         game = this;
-        setScreen(new GameScreen());
+        setScreen(new MenuScreen());
+    }
+
+    public static void setActiveScreen(Screen screen) {
+        game.setScreen(screen);
     }
 }
