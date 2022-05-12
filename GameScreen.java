@@ -24,6 +24,12 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         gameStage = new Stage();
         gameStage.addActor(spaceship);
 
+        // Create the rocks
+        gameStage.addActor(new Rock(200, 150));
+        gameStage.addActor(new Rock(200, 450));
+        gameStage.addActor(new Rock(600, 150));
+        gameStage.addActor(new Rock(600, 450));
+
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
         Gdx.input.setInputProcessor(im);
