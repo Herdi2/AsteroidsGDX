@@ -43,8 +43,8 @@ public class Spaceship extends Actor {
         spaceshipY = 300;
 
         // Set spaceship velocity
-        acceleration = 150;
-        deceleration = 50;
+        acceleration = 250;
+        deceleration = 150;
         maxSpeed = 200;
         velocityVec = new Vector2(0, 0);
         accelVec = new Vector2(0, 0);
