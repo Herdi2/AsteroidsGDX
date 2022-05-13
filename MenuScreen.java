@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,6 +17,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
     private InputMultiplexer im;
     private static Label.LabelStyle labelStyle;
     private Label asteroidsLabel;
+    private Label instructionsLabel;
     private TextButton startButton;
 
     @Override
@@ -64,6 +66,13 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
                                 }
         );
         uiStage.addActor(quitButton);
+
+        // Create instructions
+        String instructiontxt = "W - ACCELERATE FORWARD \n SPACE - SHOOT \n MOUSE - MOVEMENT CONTROL";
+        instructionsLabel = new Label(instructiontxt, labelStyle);
+        instructionsLabel.setColor(Color.WHITE);
+        instructionsLabel.setPosition(0, 0);
+        uiStage.addActor(instructionsLabel);
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
