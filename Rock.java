@@ -44,8 +44,8 @@ public class Rock extends Actor{
 
         // Set speed
         maxSpeed = 3;
-        xSpeed = ThreadLocalRandom.current().nextInt(1, maxSpeed);
-        ySpeed = ThreadLocalRandom.current().nextInt(1, maxSpeed);
+        xSpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
+        ySpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
 
         // Sets origin to be the middle of the asteroid
         setOrigin(getOriginX() + (float) texture.getWidth()/2, getOriginY() + (float) texture.getHeight()/2);
