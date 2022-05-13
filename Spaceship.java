@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -24,6 +26,7 @@ public class Spaceship extends Actor {
     private float maxSpeed;
     private float acceleration;
     private float deceleration;
+    public Rectangle hitBoxRectangle;
 
 
 
@@ -53,6 +56,7 @@ public class Spaceship extends Actor {
         textureRegion.setRegion(texture);
         this.setPosition(spaceshipX, spaceshipY);
         setSize(texture.getWidth(), texture.getHeight());
+        setHitbox(spaceshipX, spaceshipY);
 
         // Sets origin to be the middle of the spaceship
         setOrigin(getOriginX() + (float) texture.getWidth()/2, getOriginY() + (float) texture.getHeight()/2);
@@ -64,7 +68,6 @@ public class Spaceship extends Actor {
      * @param dt
      */
     public void act(float dt) {
-
         if(Gdx.input.isKeyPressed(Input.Keys.W)) {
             accelerate(dt);
         }
@@ -72,6 +75,16 @@ public class Spaceship extends Actor {
         boundSpaceshipToWorld();
         rotate();
         applyPhysics(dt);
+
+        setHitbox(getX(), getY());
+
+    }
+
+    /**
+     * Creates a rectangular hitbox around the spaceship
+     */
+    private void setHitbox(float x, float y) {
+        hitBoxRectangle = new Rectangle(x, y, getWidth(), getHeight());
     }
 
     /**

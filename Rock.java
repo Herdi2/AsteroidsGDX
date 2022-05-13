@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -20,7 +21,7 @@ public class Rock extends Actor{
     private final TextureRegion textureRegion;
     private final Texture texture;
     private final String[] asteroidTypes;
-    private Polygon hitBoxRectangle;
+    public Rectangle hitBoxRectangle;
 
     private int maxSpeed;
     private float xSpeed;
@@ -28,7 +29,7 @@ public class Rock extends Actor{
 
     public Rock(float x, float y) {
         super();
-        System.out.println("ROCK SPAWNED");
+
         asteroidTypes = new String[]{"assets/asteroid1.png", "assets/asteroid2.png", "assets/asteroid3.png"};
         // Load in the asteroid textures
         FileHandle asteroidFile = new FileHandle(asteroidTypes[ThreadLocalRandom.current().nextInt(0, 3)]);
@@ -36,7 +37,7 @@ public class Rock extends Actor{
         texture = new Texture(asteroidFile);
         textureRegion.setRegion(texture);
         setSize(texture.getWidth(), texture.getHeight());
-        setHitbox();
+        setHitbox(x, y);
 
         // Set position
         setPosition(x, y);
@@ -56,19 +57,16 @@ public class Rock extends Actor{
      * @param dt
      */
     public void act(float dt) {
-
         moveBy(xSpeed, ySpeed);
         boundSpaceshipToWorld();
-
+        setHitbox(getX(), getY());
     }
 
     /**
      * Creates a rectangular hitbox around the asteroid
      */
-    private void setHitbox() {
-        float w = getWidth();
-        float h = getHeight();
-        hitBoxRectangle = new Polygon(new float[]{0,0, w,0, w,h, 0,h});
+    private void setHitbox(float x, float y) {
+        hitBoxRectangle = new Rectangle(x, y, getWidth(), getHeight());
     }
 
     /**

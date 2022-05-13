@@ -1,6 +1,7 @@
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import java.util.ArrayList;
 
 /**
  * The main game screen were the game is played and game actors are rendered.
@@ -18,17 +19,27 @@ public class GameScreen extends Game implements InputProcessor, Screen {
     // Handles input
     private InputMultiplexer im;
 
+    private ArrayList<Rock> asteroids;
+    private ArrayList<Particle> lasers;
+
+
     @Override
     public void create() {
         spaceship = new Spaceship();
         gameStage = new Stage();
-        gameStage.addActor(spaceship);
+        lasers = new ArrayList<>();
+        // Create asteroids
+        asteroids = new ArrayList<>();
+        asteroids.add(new Rock(200, 150));
+        asteroids.add(new Rock(200, 450));
+        asteroids.add(new Rock(600, 450));
+        asteroids.add(new Rock(600, 150));
 
-        // Create the rocks
-        gameStage.addActor(new Rock(200, 150));
-        gameStage.addActor(new Rock(200, 450));
-        gameStage.addActor(new Rock(600, 150));
-        gameStage.addActor(new Rock(600, 450));
+        for(Rock r : asteroids) {
+            gameStage.addActor(r);
+        }
+
+        gameStage.addActor(spaceship);
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -42,12 +53,32 @@ public class GameScreen extends Game implements InputProcessor, Screen {
 
         Gdx.gl.glClearColor(0,0,0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         gameStage.draw();
 
+        // Remove lasers outside the screen
+        lasers.removeIf(p -> p.getX() < 0 || p.getX() > 800 || p.getY() < 0 || p.getY() > 600);
+
+        // Check for lasers colliding with asteroids and remove both if they do
+        for(Particle laser : lasers) {
+            for(Rock asteroid : asteroids) {
+                if(laser.hitBoxRectangle.overlaps(asteroid.hitBoxRectangle)) {
+                    asteroid.remove();
+                    laser.remove();
+                    // Generate two new smaller asteroids
+                    System.out.println("HIT ROCK");
+                }
+            }
+        }
+        lasers.removeIf(laser -> laser.getStage() == null);
+        asteroids.removeIf(asteroid -> asteroid.getStage() == null);
+
+
+        for(Rock e : asteroids) {
+            if(e.hitBoxRectangle.overlaps(spaceship.hitBoxRectangle)) {
+                System.out.println("HP--");
+            }
+        }
     }
-
-
 
     /**
      * The methods below are required of the InputProcessor interface
@@ -56,8 +87,9 @@ public class GameScreen extends Game implements InputProcessor, Screen {
     @Override
     public boolean keyDown(int keycode) {
         if(keycode == Input.Keys.SPACE) {
-            Particle laser = new Particle(spaceship);
-            gameStage.addActor(laser);
+            Particle p = new Particle(spaceship);
+            gameStage.addActor(p);
+            lasers.add(p);
         }
         return false;
     }
