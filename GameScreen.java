@@ -1,7 +1,12 @@
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+
 import java.util.ArrayList;
 
 /**
@@ -12,6 +17,10 @@ public class GameScreen extends Game implements InputProcessor, Screen {
 
     private Stage gameStage;
     private Spaceship spaceship;
+    private float spaceshipHealth;
+    private Label gameOverLabel;
+    private Label gameOverInstructions;
+    private Label healthLabel;
 
     // Window dimensions
     private static final int WINDOW_WIDTH = 800;
@@ -20,20 +29,38 @@ public class GameScreen extends Game implements InputProcessor, Screen {
     // Handles input
     private InputMultiplexer im;
 
+    // Handles game actors
     private ArrayList<Rock> asteroids;
     private ArrayList<Particle> lasers;
 
+    // Handles label creation
+    private static Label.LabelStyle labelStyle;
 
     @Override
     public void create() {
+        createFont();
         spaceship = new Spaceship();
         gameStage = new Stage();
         lasers = new ArrayList<>();
         // Create asteroids
         asteroids = new ArrayList<>();
         spawnFourAsteroids();
-
         gameStage.addActor(spaceship);
+
+        // Create spaceship health
+        spaceshipHealth = 100;
+        healthLabel = new Label("HEALTH: " + spaceshipHealth, labelStyle);
+        healthLabel.setColor(Color.GREEN);
+        healthLabel.setPosition(0, 0);
+        gameStage.addActor(healthLabel);
+
+        // Create game over screen
+        gameOverLabel = new Label("GAME OVER", labelStyle);
+        gameOverLabel.setColor(Color.WHITE);
+        gameOverLabel.setPosition(Launcher.WINDOW_WIDTH/2 - gameOverLabel.getWidth()/2, Launcher.WINDOW_HEIGHT-200);
+        gameOverInstructions = new Label("PRESS 'R' TO RESTART \n \n   PRESS 'Q' TO QUIT", labelStyle);
+        gameOverInstructions.setColor(Color.WHITE);
+        gameOverInstructions.setPosition(Launcher.WINDOW_WIDTH/2 - gameOverInstructions.getWidth()/2, Launcher.WINDOW_HEIGHT- 200 - gameOverLabel.getHeight()*3);
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -44,17 +71,14 @@ public class GameScreen extends Game implements InputProcessor, Screen {
     @Override
     public void render(float dt) {
         gameStage.act(dt);
-
         Gdx.gl.glClearColor(0,0,0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        gameStage.draw();
 
         // Remove lasers outside the screen
         lasers.removeIf(p -> p.getX() < 0 || p.getX() > 800 || p.getY() < 0 || p.getY() > 600);
 
         // Check for lasers colliding with asteroids and remove both if they do
-        ArrayList<Rock> currAsteroids = new ArrayList<>();
-        currAsteroids.addAll(asteroids);
+        ArrayList<Rock> currAsteroids = new ArrayList<>(asteroids);
         for(Particle laser : lasers) {
             for(Rock asteroid : currAsteroids) {
                 if(laser.hitBoxRectangle.overlaps(asteroid.hitBoxRectangle)) {
@@ -66,14 +90,27 @@ public class GameScreen extends Game implements InputProcessor, Screen {
                 }
             }
         }
-
         lasers.removeIf(laser -> laser.getStage() == null);
         asteroids.removeIf(asteroid -> asteroid.getStage() == null);
 
         // Checks for spaceship colliding with asteroids
+        // and reduces spaceship health if true
         for(Rock e : asteroids) {
             if(e.hitBoxRectangle.overlaps(spaceship.hitBoxRectangle)) {
-                System.out.println("HP--");
+                spaceshipHealth--;
+                healthLabel.setText("HEALTH: " + spaceshipHealth);
+                // Set color of spaceship health
+                if(spaceshipHealth <= 70 && spaceshipHealth >= 30) {
+                    healthLabel.setColor(Color.YELLOW);
+                } else if(spaceshipHealth < 30) {
+                    healthLabel.setColor(Color.RED);
+                }
+                if(spaceshipHealth <= 0) {
+                    spaceship.remove();
+                    healthLabel.remove();
+                    gameStage.addActor(gameOverLabel);
+                    gameStage.addActor(gameOverInstructions);
+                }
             }
         }
 
@@ -81,8 +118,13 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         if(asteroids.size() == 0) {
             spawnFourAsteroids();
         }
+
+        gameStage.draw();
     }
 
+    /**
+     * Creates four asteroids in a rectangular position with one in each corner on the screen.
+     */
     private void spawnFourAsteroids() {
         asteroids.add(new Rock(200, 150));
         asteroids.add(new Rock(200, 450));
@@ -92,6 +134,21 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         for(Rock r : asteroids) {
             gameStage.addActor(r);
         }
+    }
+
+    private void createFont() {
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = new BitmapFont();
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Vonique 64.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 48;
+        fontParameter.color = Color.WHITE;
+        fontParameter.borderWidth = 2;
+        fontParameter.borderColor = Color.WHITE;
+        fontParameter.borderStraight = true;
+        fontParameter.minFilter = Texture.TextureFilter.Linear;
+        fontParameter.magFilter = Texture.TextureFilter.Linear;
+        labelStyle.font = fontGenerator.generateFont(fontParameter);
     }
 
     /**
@@ -126,10 +183,16 @@ public class GameScreen extends Game implements InputProcessor, Screen {
 
     @Override
     public boolean keyDown(int keycode) {
-        if(keycode == Input.Keys.SPACE) {
+        if(keycode == Input.Keys.SPACE && spaceship.getStage() != null) {
             Particle p = new Particle(spaceship);
             gameStage.addActor(p);
             lasers.add(p);
+        }
+        if(keycode == Input.Keys.R && spaceshipHealth <= 0) {
+            Asteroids.setActiveScreen(new GameScreen());
+        }
+        if(keycode == Input.Keys.Q && spaceshipHealth <= 0) {
+            Asteroids.setActiveScreen(new MenuScreen());
         }
         return false;
     }
