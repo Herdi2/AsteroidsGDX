@@ -22,9 +22,16 @@ public class GameScreen extends Game implements InputProcessor, Screen {
     private Label gameOverInstructions;
     private Label healthLabel;
 
-    // Window dimensions
-    private static final int WINDOW_WIDTH = 800;
-    private static final int WINDOW_HEIGHT = 600;
+    /**
+     * POINTS
+     * NOTE: ROCK_WIDTH IS HARDCODED
+     * Large rock width = 96 px -> 100 p
+     * Medium rock width = 96/2 px -> 50 p
+     * Small rock width = 96/4 px -> 25 p
+     */
+    private Label pointsLabel;
+    private int points;
+    private final float ROCK_WIDTH = 96;
 
     // Handles input
     private InputMultiplexer im;
@@ -53,6 +60,13 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         healthLabel.setColor(Color.GREEN);
         healthLabel.setPosition(0, 0);
         gameStage.addActor(healthLabel);
+
+        // Handles points
+        points = 0;
+        pointsLabel = new Label("POINTS: " + points, labelStyle);
+        pointsLabel.setColor(Color.WHITE);
+        pointsLabel.setPosition(0, Launcher.WINDOW_HEIGHT - pointsLabel.getHeight());
+        gameStage.addActor(pointsLabel);
 
         // Create game over screen
         gameOverLabel = new Label("GAME OVER", labelStyle);
@@ -86,7 +100,8 @@ public class GameScreen extends Game implements InputProcessor, Screen {
                     asteroid.remove();
                     // Generate two new smaller asteroids
                     destroy(asteroid);
-
+                    // Add points depending on size
+                    pointCalculation(asteroid);
                 }
             }
         }
@@ -120,6 +135,18 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         }
 
         gameStage.draw();
+    }
+
+    private void pointCalculation(Rock asteroid) {
+        float width = asteroid.getWidth();
+        if(width == ROCK_WIDTH) {
+            points += 100;
+        } else if(width == ROCK_WIDTH/2) {
+            points += 50;
+        } else {
+            points += 25;
+        }
+        pointsLabel.setText("POINTS: " + points);
     }
 
     /**
