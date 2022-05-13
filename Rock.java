@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,7 +30,6 @@ public class Rock extends Actor{
 
     public Rock(float x, float y) {
         super();
-
         asteroidTypes = new String[]{"assets/asteroid1.png", "assets/asteroid2.png", "assets/asteroid3.png"};
         // Load in the asteroid textures
         FileHandle asteroidFile = new FileHandle(asteroidTypes[ThreadLocalRandom.current().nextInt(0, 3)]);
@@ -44,8 +44,32 @@ public class Rock extends Actor{
 
         // Set speed
         maxSpeed = 3;
-        xSpeed = ThreadLocalRandom.current().nextInt(1, maxSpeed);
-        ySpeed = ThreadLocalRandom.current().nextInt(1, maxSpeed);
+        xSpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
+        ySpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
+
+        // Sets origin to be the middle of the asteroid
+        setOrigin(getOriginX() + (float) texture.getWidth()/2, getOriginY() + (float) texture.getHeight()/2);
+    }
+
+    public Rock(float x, float y, float width, float height) {
+        super();
+        setName("Rock");
+        asteroidTypes = new String[]{"assets/asteroid1.png", "assets/asteroid2.png", "assets/asteroid3.png"};
+        // Load in the asteroid textures
+        FileHandle asteroidFile = new FileHandle(asteroidTypes[ThreadLocalRandom.current().nextInt(0, 3)]);
+        textureRegion = new TextureRegion();
+        texture = new Texture(asteroidFile);
+        textureRegion.setRegion(texture);
+        setSize(width, height);
+        setHitbox(x, y);
+
+        // Set position
+        setPosition(x, y);
+
+        // Set speed
+        maxSpeed = 3;
+        xSpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
+        ySpeed = ThreadLocalRandom.current().nextInt(-maxSpeed, maxSpeed);
 
         // Sets origin to be the middle of the asteroid
         setOrigin(getOriginX() + (float) texture.getWidth()/2, getOriginY() + (float) texture.getHeight()/2);
@@ -58,9 +82,10 @@ public class Rock extends Actor{
      */
     public void act(float dt) {
         moveBy(xSpeed, ySpeed);
-        boundSpaceshipToWorld();
+        boundRockToWorld();
         setHitbox(getX(), getY());
     }
+
 
     /**
      * Creates a rectangular hitbox around the asteroid
@@ -70,10 +95,10 @@ public class Rock extends Actor{
     }
 
     /**
-     * Bounds the asteroid to the world by letting it wrap around
+     * Bounds the Rock to the world by letting it wrap around
      * when going offscreen.
      */
-    private void boundSpaceshipToWorld() {
+    private void boundRockToWorld() {
 
         if(getX() + getHeight()/2 < 0) {
             setX(Launcher.WINDOW_WIDTH);
