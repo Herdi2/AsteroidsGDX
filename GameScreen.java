@@ -1,5 +1,6 @@
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.ArrayList;
 
@@ -30,14 +31,7 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         lasers = new ArrayList<>();
         // Create asteroids
         asteroids = new ArrayList<>();
-        asteroids.add(new Rock(200, 150));
-        asteroids.add(new Rock(200, 450));
-        asteroids.add(new Rock(600, 450));
-        asteroids.add(new Rock(600, 150));
-
-        for(Rock r : asteroids) {
-            gameStage.addActor(r);
-        }
+        spawnFourAsteroids();
 
         gameStage.addActor(spaceship);
 
@@ -59,25 +53,71 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         lasers.removeIf(p -> p.getX() < 0 || p.getX() > 800 || p.getY() < 0 || p.getY() > 600);
 
         // Check for lasers colliding with asteroids and remove both if they do
+        ArrayList<Rock> currAsteroids = new ArrayList<>();
+        currAsteroids.addAll(asteroids);
         for(Particle laser : lasers) {
-            for(Rock asteroid : asteroids) {
+            for(Rock asteroid : currAsteroids) {
                 if(laser.hitBoxRectangle.overlaps(asteroid.hitBoxRectangle)) {
-                    asteroid.remove();
                     laser.remove();
+                    asteroid.remove();
                     // Generate two new smaller asteroids
-                    System.out.println("HIT ROCK");
+                    destroy(asteroid);
+
                 }
             }
         }
+
         lasers.removeIf(laser -> laser.getStage() == null);
         asteroids.removeIf(asteroid -> asteroid.getStage() == null);
 
-
+        // Checks for spaceship colliding with asteroids
         for(Rock e : asteroids) {
             if(e.hitBoxRectangle.overlaps(spaceship.hitBoxRectangle)) {
                 System.out.println("HP--");
             }
         }
+
+        // Checks amount of asteroids and adds four if none
+        if(asteroids.size() == 0) {
+            spawnFourAsteroids();
+        }
+    }
+
+    private void spawnFourAsteroids() {
+        asteroids.add(new Rock(200, 150));
+        asteroids.add(new Rock(200, 450));
+        asteroids.add(new Rock(600, 450));
+        asteroids.add(new Rock(600, 150));
+
+        for(Rock r : asteroids) {
+            gameStage.addActor(r);
+        }
+    }
+
+    /**
+     * Is called when an asteroid is destroyed. Will create to new asteroids if
+     * the asteroid destroyed was big enough.
+     *
+     * @param asteroid The destroyed asteroid
+     */
+    private void destroy(Rock asteroid) {
+
+        // Too small to generate more
+        if(asteroid.getWidth() <= 24) {
+            return;
+        }
+
+        float xPos = asteroid.getX();
+        float yPos = asteroid.getY();
+
+        Rock asteroid1 = new Rock(xPos + asteroid.getWidth()/2, yPos + asteroid.getHeight()/2, asteroid.getWidth()/2, asteroid.getHeight()/2);
+        Rock asteroid2 = new Rock(xPos - asteroid.getWidth()/2, yPos - asteroid.getHeight()/2, asteroid.getWidth()/2, asteroid.getHeight()/2);
+
+        gameStage.addActor(asteroid1);
+        gameStage.addActor(asteroid2);
+
+        asteroids.add(asteroid1);
+        asteroids.add(asteroid2);
     }
 
     /**
