@@ -36,7 +36,7 @@ public class Rock extends Actor{
         textureRegion = new TextureRegion();
         texture = new Texture(asteroidFile);
         textureRegion.setRegion(texture);
-        setSize(texture.getWidth(), texture.getHeight());
+        setSize(96, 96);
         setHitbox(x, y);
 
         // Set position
