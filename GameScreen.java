@@ -1,4 +1,5 @@
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * The main game screen were the game is played and game actors are rendered.
  *
  */
-public class GameScreen extends Game implements InputProcessor, Screen {
+public class GameScreen extends Game implements InputProcessor, Screen, Sound {
 
     private Stage gameStage;
     private Spaceship spaceship;
@@ -42,6 +43,14 @@ public class GameScreen extends Game implements InputProcessor, Screen {
 
     // Handles label creation
     private static Label.LabelStyle labelStyle;
+
+    // Handles sound effects
+    private long audioLength;
+    private float audioVolume;
+    private Sound spaceshipShoot;
+    private Sound bangLarge;
+    private Sound bangMedium;
+    private Sound bangSmall;
 
     @Override
     public void create() {
@@ -76,6 +85,14 @@ public class GameScreen extends Game implements InputProcessor, Screen {
         gameOverInstructions.setColor(Color.WHITE);
         gameOverInstructions.setPosition(Launcher.WINDOW_WIDTH/2 - gameOverInstructions.getWidth()/2, Launcher.WINDOW_HEIGHT- 200 - gameOverLabel.getHeight()*3);
 
+        // Create sound effects
+        audioLength = 1L;
+        audioVolume = 0.1f;
+        spaceshipShoot = Gdx.audio.newSound(Gdx.files.internal("assets/fire.ogg"));
+        bangLarge = Gdx.audio.newSound(Gdx.files.internal("assets/bangLarge.ogg"));
+        bangMedium = Gdx.audio.newSound(Gdx.files.internal("assets/bangMedium.ogg"));
+        bangSmall = Gdx.audio.newSound(Gdx.files.internal("assets/bangSmall.ogg"));
+
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
         Gdx.input.setInputProcessor(im);
@@ -98,10 +115,9 @@ public class GameScreen extends Game implements InputProcessor, Screen {
                 if(laser.hitBoxRectangle.overlaps(asteroid.hitBoxRectangle)) {
                     laser.remove();
                     asteroid.remove();
-                    // Generate two new smaller asteroids
                     destroy(asteroid);
-                    // Add points depending on size
                     pointCalculation(asteroid);
+                    asteroidBang(asteroid);
                 }
             }
         }
@@ -147,6 +163,17 @@ public class GameScreen extends Game implements InputProcessor, Screen {
             points += 25;
         }
         pointsLabel.setText("POINTS: " + points);
+    }
+
+    private void asteroidBang(Rock asteroid) {
+        float width = asteroid.getWidth();
+        if(width == ROCK_WIDTH) {
+            bangLarge.play(audioVolume);
+        } else if(width == ROCK_WIDTH/2) {
+            bangMedium.play(audioVolume);
+        } else {
+            bangSmall.play(audioVolume);
+        }
     }
 
     /**
@@ -214,6 +241,7 @@ public class GameScreen extends Game implements InputProcessor, Screen {
             Particle p = new Particle(spaceship);
             gameStage.addActor(p);
             lasers.add(p);
+            spaceshipShoot.play(audioVolume);
         }
         if(keycode == Input.Keys.R && spaceshipHealth <= 0) {
             Asteroids.setActiveScreen(new GameScreen());
@@ -269,6 +297,77 @@ public class GameScreen extends Game implements InputProcessor, Screen {
 
     @Override
     public void hide() {
+
+    }
+
+    /*Required of the Sound interface*/
+    @Override
+    public long play() {
+        return 0;
+    }
+
+    @Override
+    public long play(float v) {
+        return 0;
+    }
+
+    @Override
+    public long play(float v, float v1, float v2) {
+        return 0;
+    }
+
+    @Override
+    public long loop() {
+        return 0;
+    }
+
+    @Override
+    public long loop(float v) {
+        return 0;
+    }
+
+    @Override
+    public long loop(float v, float v1, float v2) {
+        return 0;
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void stop(long l) {
+
+    }
+
+    @Override
+    public void pause(long l) {
+
+    }
+
+    @Override
+    public void resume(long l) {
+
+    }
+
+    @Override
+    public void setLooping(long l, boolean b) {
+
+    }
+
+    @Override
+    public void setPitch(long l, float v) {
+
+    }
+
+    @Override
+    public void setVolume(long l, float v) {
+
+    }
+
+    @Override
+    public void setPan(long l, float v, float v1) {
 
     }
 }
