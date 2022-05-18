@@ -18,6 +18,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
     private static Label.LabelStyle labelStyle;
     private Label asteroidsLabel;
     private Label instructionsLabel;
+    private Label musicCredits;
     private TextButton startButton;
 
     @Override
@@ -25,7 +26,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         uiStage = new Stage();
 
         // Create the font and labels
-        createFont();
+        createFont(48);
         asteroidsLabel = new Label("ASTEROIDS", labelStyle);
         asteroidsLabel.setColor(Color.WHITE);
         asteroidsLabel.setPosition(Launcher.WINDOW_WIDTH/2 - asteroidsLabel.getWidth()/2, Launcher.WINDOW_HEIGHT-200);
@@ -67,12 +68,19 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         );
         uiStage.addActor(quitButton);
 
+        createFont(24);
         // Create instructions
         String instructiontxt = "W - ACCELERATE FORWARD \nSPACE - SHOOT \nMOUSE - MOVEMENT CONTROL";
         instructionsLabel = new Label(instructiontxt, labelStyle);
         instructionsLabel.setColor(Color.WHITE);
         instructionsLabel.setPosition(0, 0);
         uiStage.addActor(instructionsLabel);
+
+        musicCredits = new Label("Music by Eric Matyas\n www.soundimage.org", labelStyle);
+        musicCredits.setColor(Color.WHITE);
+        musicCredits.setPosition(10, Launcher.WINDOW_HEIGHT-100);
+        musicCredits.setScale(10, 10);
+        uiStage.addActor(musicCredits);
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -96,12 +104,12 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         uiStage.draw();
     }
 
-    private void createFont() {
+    private void createFont(int fontSize) {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Hyperspace.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        fontParameter.size = 48;
+        fontParameter.size = fontSize;
         fontParameter.color = Color.WHITE;
         fontParameter.borderWidth = 2;
         fontParameter.borderColor = Color.WHITE;
