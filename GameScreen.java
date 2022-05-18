@@ -1,4 +1,5 @@
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -44,13 +45,14 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
     // Handles label creation
     private static Label.LabelStyle labelStyle;
 
-    // Handles sound effects
+    // Handles sound effects and music
     private long audioLength;
     private float audioVolume;
     private Sound spaceshipShoot;
     private Sound bangLarge;
     private Sound bangMedium;
     private Sound bangSmall;
+    private Music backgroundMusic;
 
     @Override
     public void create() {
@@ -92,6 +94,12 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
         bangLarge = Gdx.audio.newSound(Gdx.files.internal("assets/bangLarge.ogg"));
         bangMedium = Gdx.audio.newSound(Gdx.files.internal("assets/bangMedium.ogg"));
         bangSmall = Gdx.audio.newSound(Gdx.files.internal("assets/bangSmall.ogg"));
+
+        // Creates background music
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/Sodium-Vapor_Looping.ogg"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(audioVolume);
+        backgroundMusic.play();
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -297,7 +305,7 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
 
     @Override
     public void hide() {
-
+        backgroundMusic.stop();
     }
 
     /*Required of the Sound interface*/
