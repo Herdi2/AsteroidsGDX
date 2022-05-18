@@ -81,7 +81,7 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
         gameOverLabel = new Label("GAME OVER", labelStyle);
         gameOverLabel.setColor(Color.WHITE);
         gameOverLabel.setPosition(Launcher.WINDOW_WIDTH/2 - gameOverLabel.getWidth()/2, Launcher.WINDOW_HEIGHT-200);
-        gameOverInstructions = new Label("PRESS 'R' TO RESTART \n \n   PRESS 'Q' TO QUIT", labelStyle);
+        gameOverInstructions = new Label("PRESS 'R' TO RESTART \n \nPRESS 'Q' TO QUIT", labelStyle);
         gameOverInstructions.setColor(Color.WHITE);
         gameOverInstructions.setPosition(Launcher.WINDOW_WIDTH/2 - gameOverInstructions.getWidth()/2, Launcher.WINDOW_HEIGHT- 200 - gameOverLabel.getHeight()*3);
 
@@ -193,7 +193,7 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
     private void createFont() {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Vonique 64.ttf"));
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Hyperspace.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         fontParameter.size = 48;
         fontParameter.color = Color.WHITE;
