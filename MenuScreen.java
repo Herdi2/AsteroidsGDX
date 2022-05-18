@@ -68,7 +68,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         uiStage.addActor(quitButton);
 
         // Create instructions
-        String instructiontxt = "W - ACCELERATE FORWARD \n SPACE - SHOOT \n MOUSE - MOVEMENT CONTROL";
+        String instructiontxt = "W - ACCELERATE FORWARD \nSPACE - SHOOT \nMOUSE - MOVEMENT CONTROL";
         instructionsLabel = new Label(instructiontxt, labelStyle);
         instructionsLabel.setColor(Color.WHITE);
         instructionsLabel.setPosition(0, 0);
@@ -99,7 +99,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
     private void createFont() {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Vonique 64.ttf"));
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/Hyperspace.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         fontParameter.size = 48;
         fontParameter.color = Color.WHITE;
