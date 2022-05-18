@@ -1,4 +1,5 @@
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +21,8 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
     private Label instructionsLabel;
     private Label musicCredits;
     private TextButton startButton;
+    private Music backgroundMusic;
+    private float audioVolume;
 
     @Override
     public void create() {
@@ -81,6 +84,13 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         musicCredits.setPosition(10, Launcher.WINDOW_HEIGHT-100);
         musicCredits.setScale(10, 10);
         uiStage.addActor(musicCredits);
+
+        // Creates background music
+        audioVolume = 0.1f;
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/Trouble-on-Mercury_Looping.ogg"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(audioVolume);
+        backgroundMusic.play();
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -167,6 +177,6 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
 
     @Override
     public void hide() {
-
+        backgroundMusic.pause();
     }
 }
