@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * The main game screen were the game is played and game actors are rendered.
@@ -53,6 +54,23 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
     private Sound bangMedium;
     private Sound bangSmall;
     private Music backgroundMusic;
+
+    // Handles the score saving
+    class MyTextInputListener implements Input.TextInputListener {
+        @Override
+        public void input (String name) {
+            scoreCalculation(name.substring(0, 21), points);
+            for(Asteroids.Score s : Asteroids.scoreList) {
+                System.out.printf("Name: %s, Points: %d \n", s.getName(), s.getPoints());
+            }
+        }
+
+        @Override
+        public void canceled () {
+            Asteroids.setActiveScreen(new MenuScreen());
+        }
+    }
+    MyTextInputListener listener;
 
     @Override
     public void create() {
@@ -100,6 +118,9 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(audioVolume);
         backgroundMusic.play();
+
+        // Set score listener
+        listener = new MyTextInputListener();
 
         // Setup an inputprocessor to handle input events
         im = new InputMultiplexer();
@@ -149,6 +170,8 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
                     healthLabel.remove();
                     gameStage.addActor(gameOverLabel);
                     gameStage.addActor(gameOverInstructions);
+                    playerDead();
+                    spaceshipHealth = 0x7fffffff; // To stop the playerDead() from looping
                 }
             }
         }
@@ -159,6 +182,10 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
         }
 
         gameStage.draw();
+    }
+
+    private void playerDead() {
+        Gdx.input.getTextInput(listener, "NAME", "", "");
     }
 
     private void pointCalculation(Rock asteroid) {
@@ -240,6 +267,40 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
     }
 
     /**
+     * Adds the points earned from the current session to a list of all scores.
+     * @param name The player chosen name
+     * @param points The points earned in the session
+     */
+    private void scoreCalculation(String name, int points) {
+
+        // If list is empty
+        if(Asteroids.scoreList.size() == 0) {
+            Asteroids.scoreList.add(new Asteroids.Score(name, points));
+            return;
+        }
+
+        // If we overtook the highscore
+        if(Asteroids.scoreList.getLast().getPoints() < points) {
+            Asteroids.scoreList.add(new Asteroids.Score(name, points));
+            return;
+        }
+
+        // Sorts the linked list
+        for(int i = 0; i < Asteroids.scoreList.size(); i++) {
+            if(Asteroids.scoreList.get(i).getPoints() >= points) {
+                Asteroids.scoreList.add(i, new Asteroids.Score(name, points));
+                break;
+            }
+        }
+
+        // Restricts amount of scores to 10
+        if(Asteroids.scoreList.size() > 10) {
+            Asteroids.scoreList.remove();
+        }
+
+    }
+
+    /**
      * The methods below are required of the InputProcessor interface
      */
 
@@ -251,10 +312,10 @@ public class GameScreen extends Game implements InputProcessor, Screen, Sound {
             lasers.add(p);
             spaceshipShoot.play(audioVolume);
         }
-        if(keycode == Input.Keys.R && spaceshipHealth <= 0) {
+        if(keycode == Input.Keys.R) {
             Asteroids.setActiveScreen(new GameScreen());
         }
-        if(keycode == Input.Keys.Q && spaceshipHealth <= 0) {
+        if(keycode == Input.Keys.Q) {
             Asteroids.setActiveScreen(new MenuScreen());
         }
         return false;

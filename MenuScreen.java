@@ -12,6 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+
 public class MenuScreen extends Game implements InputProcessor, Screen {
 
     private Stage uiStage;
@@ -56,6 +61,21 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         );
         uiStage.addActor(startButton);
 
+        // Create scoreboard button
+        TextButton scoreButton = new TextButton("SCOREBOARD", textButtonStyle);
+        scoreButton.setPosition(Launcher.WINDOW_WIDTH/2 - scoreButton.getWidth()/2, Launcher.WINDOW_HEIGHT - 350);
+        scoreButton.addListener(new InputListener() {
+                                   @Override
+                                   public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                                       if(event.getType().equals(InputEvent.Type.touchDown)) {
+                                           Asteroids.setActiveScreen(new ScoreboardScreen());
+                                       }
+                                       return false;
+                                   }
+                               }
+        );
+        uiStage.addActor(scoreButton);
+
         // Create quit button
         TextButton quitButton = new TextButton("QUIT", textButtonStyle);
         quitButton.setPosition(Launcher.WINDOW_WIDTH/2 - quitButton.getWidth()/2, Launcher.WINDOW_HEIGHT - 400);
@@ -63,6 +83,7 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
                                     @Override
                                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                                         if(event.getType().equals(InputEvent.Type.touchDown)) {
+                                            writeScoreToCSV();
                                             System.exit(0);
                                         }
                                         return false;
@@ -129,12 +150,30 @@ public class MenuScreen extends Game implements InputProcessor, Screen {
         labelStyle.font = fontGenerator.generateFont(fontParameter);
     }
 
+    /**
+     * Saves the scores from the current session to a CSV file.
+     */
+    private void writeScoreToCSV() {
+        File csvfile = new File("scores.csv");
+        try{
+            PrintWriter out = new PrintWriter(csvfile);
+            for(Asteroids.Score e : Asteroids.scoreList) {
+                out.println(e.getName() + ", " + e.getPoints());
+            }
+            out.close();
+        } catch(FileNotFoundException e) {
+            System.out.println("An unexpected error has occured");
+        }
+
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         if(keycode == Input.Keys.ENTER) {
             Asteroids.setActiveScreen(new GameScreen());
         }
         if(keycode == Input.Keys.ESCAPE) {
+            writeScoreToCSV();
             System.exit(0);
         }
         return false;
